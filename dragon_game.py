@@ -1,3 +1,21 @@
+# Dragon Game V3
+# Take Dragon Game v2 and add a name generator API.
+
+import requests # Requires venv to be running
+
+def get_name(length):
+    if length<2:
+        return_name = "X"
+    elif length>40:
+        return_name = "Sir Long Name IV"
+    else:
+        # Could implement an internet connnection check here. More info at:
+        # https://www.kite.com/python/answers/how-to-check-internet-connection-in-python
+        api_url = f"https://uzby.com/api.php?min={length}&max={length}"
+        response = requests.get(api_url)
+        return_name = response.text
+    return return_name
+
 def magic():
     with open("magic.txt", "w") as file_out:
         my_str = "Book of Spell(s):\n"
@@ -7,6 +25,10 @@ def magic():
 
 name = input("What is your name?: ")
 print("Hi " + name + ". Welcome to the game world.")
+
+api_name = get_name(len(name))
+print("Your game character is called", api_name)
+
 go = True
 alive = True
 sword = False
