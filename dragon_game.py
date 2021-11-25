@@ -1,7 +1,19 @@
-# Dragon Game V3
-# Take Dragon Game v2 and add a name generator API.
+# Dragon Game V4
+# Take Dragon Game v3 and add another API.
 
 import requests # Requires venv to be running
+import random
+
+def cocktail_ingred():
+    n = random.randint(0,400)
+    my_url = f"https://www.thecocktaildb.com/api/json/v1/1/lookup.php?iid={n}"
+    response = requests.get(my_url).json()
+    my_ingred = response['ingredients'][0]['strIngredient']
+    ingred_descr = response['ingredients'][0]['strDescription']
+    print("Despite leaving the sword behind, you're in luck!")
+    print("You've found some", my_ingred)
+    print("(In case you don't know: ", ingred_descr, ")")
+    return
 
 def get_name(length):
     if length<2:
@@ -56,6 +68,7 @@ while go:
                 continue
             else:
                 print("You leave the sword behind and exit the room from where you came.")
+                cocktail_ingred()
             continue
     else:
         print("You enter a room with a dragon!")
