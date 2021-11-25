@@ -1,3 +1,10 @@
+def magic():
+    with open("magic.txt", "w") as file_out:
+        my_str = "Book of Spell(s):\n"
+        my_str += "--- 'fus ro dah'"
+        file_out.write(my_str)
+    return
+
 name = input("What is your name?: ")
 print("Hi " + name + ". Welcome to the game world.")
 go = True
@@ -9,7 +16,11 @@ while go:
     if door == "left":
         print("You enter an empty room.")
         if sword == True:
-            print("You've already explored here. It's time to go back.")
+            print("You've already explored here, but this time you see something new!")
+            print("It's a strange-looking book called 'magic.txt'.")
+            print("Unfortately the book cannot be opened in the game interface.")
+            print("If only you could find out what's inside, it may help your quest...")
+            magic()
             continue
         choice = input("Type 'explore' to look around or 'leave' to go back: ")
         if choice == "leave":
@@ -29,6 +40,11 @@ while go:
         choice = input("Type 'attack' to attack the dragon or 'leave' to go back: ")
         if choice == "leave":
             continue
+        elif choice == "fus ro dah":
+            print("Your magic words impress the beast, and it becomes your best friend.")
+            print("In time, you become lovers.")
+            print("You win!")
+            break
         else:
             if sword == True:
                 print("Your sword pierces the dragon's armour!")
