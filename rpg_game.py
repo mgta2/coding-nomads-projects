@@ -1,4 +1,4 @@
-# RPG Project
+# RPG Project v2 (with inheritance)
 
 import random
 
@@ -51,6 +51,80 @@ class Opponent():
                 other.level = 0
         return winner
 
+class WeakOpponent(Opponent):
+    def attack(self, other, weapon):
+        level_sum = self.level + other.level
+        if weapon == "bow" and self.ranged == True and not(self.name == "Dragon"):
+            winner = "player"
+        elif weapon == "sword" and self.ranged == False:
+            winner = "player"
+        else:
+            n = random.randint(1,level_sum)
+            # Make it more likely to win when righting with no weapon.
+            if n <= self.level/2:
+                winner = "monster"
+            else:
+                winner = "player"
+        
+        if winner == "player":
+            other.level += self.level
+            print("You win the battle!")
+            print(f"Experience gained - you are now level {other.level}.")
+        else:
+            print("You lose the battle...")
+            if weapon == "sword":
+                other.has_sword = False
+                print("You escape with you life but lose your sword while running away.")
+            elif weapon == "bow":
+                other.has_bow = False
+                print("You manage to escape with your life, but your bow is destroyed in the chaos.")
+            else:
+                print("Unarmed, your death comes swiftly.")
+                other.level = 0
+        return winner
+        
+
+class Boss(Opponent):
+    # Code for the Dragon boss.
+    def __init__(self, name, level, ranged, necro_orc_dead):
+        # Add dialogue depending on whether the Necro and Orc are dead.
+        super().__init__(name, level, ranged)
+        self.necro_orc_dead = necro_orc_dead
+    
+    def __str__(self):
+        my_str = "WARNING - BOSS MONSTER\n"
+        if self.necro_orc_dead == False:
+            my_str += "Monster's details are hidden while more foes remain in other rooms."
+        else:
+            my_str += f"The monster is a level {self.level} foe."
+        return my_str
+    
+    def attack(self, other, weapon):
+        # Make the fight 'harder' if you have both a bow and sword.
+        self.level += 5*(other.has_bow + other.has_sword)
+        level_sum = self.level + other.level
+        n = random.randint(1,level_sum)
+        if n <= self.level:
+            winner = "monster"
+        else:
+            winner = "player"
+        if winner == "player":
+            other.level += self.level
+            print("You win the battle!")
+            print(f"Experience gained - you are now level {other.level}.")
+        else:
+            print("You lose the battle...")
+            if weapon == "sword":
+                other.has_sword = False
+                print("You escape with you life but lose your sword while running away.")
+            elif weapon == "bow":
+                other.has_bow = False
+                print("You manage to escape with your life, but your bow is destroyed in the chaos.")
+            else:
+                print("Unarmed, your death comes swiftly.")
+                other.level = 0
+        return winner
+
 def choose_weapon(bow, sword):
     # Code to see what weapons hero has and select one to equip.
     if bow == True and sword == True:
@@ -75,6 +149,8 @@ def choose_weapon(bow, sword):
     return weapon_choice
 
 hero = Hero(1, False, False)
+necro_dead = False
+orc_dead = False
 
 flag = True
 while True:
@@ -94,7 +170,12 @@ while True:
     
     if user_input == 1:
         # Final Boss.
-        dragon = Opponent("Dragon", 10, True)
+        if necro_dead == True and orc_dead == True:
+            necro_orc_dead = True
+        else:
+            necro_orc_dead = False
+        
+        dragon = Boss("Dragon", 10, True, necro_orc_dead)
         
         print("You see a giant dragon before you!")
         print("Busy looking at its treasure, the beast doesn't see you.")
@@ -144,7 +225,7 @@ while True:
         necro = Opponent("Necromancer", 7, False)
         
         print("You see an evil wizard - a necromancer!")
-        print("It seems you entered the room with drawing his attention.")
+        print("It seems you entered the room without drawing his attention.")
         
         user_input = input("Type 'attack', 'inspect' or 'leave': ")
         
@@ -153,6 +234,7 @@ while True:
             winner = necro.attack(hero, weapon)
             if winner == "player":
                 print("You leave the dead necromancer behind you as you exit the room.")
+                necro_dead = True
                 continue
             else:
                 continue
@@ -167,7 +249,7 @@ while True:
         
     elif user_input == 4:
         # Ranged monster with sword (Orc). Win sword if victorious.
-        orc = Opponent("Orc", 3, True)
+        orc = WeakOpponent("Orc", 3, True)
         
         print("Pushing open the door, you see a massive Orc before you, wielding a sword.")
         print("Luckily the monster didn't notice you entering...")
@@ -180,6 +262,7 @@ while True:
             if winner == "player":
                 print("The orc lies dead. You take its sword, victorious.")
                 hero.has_sword = True
+                orc_dead = True
                 continue
             else:
                 continue
